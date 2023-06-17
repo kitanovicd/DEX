@@ -153,4 +153,60 @@ contract LiquidityPoolTest is Test {
         vm.expectRevert(bytes("Insufficient liquidity"));
         liquidityPool.addLiquidity(amount1, amount2, shouldReceive + 1);
     }
+
+    function testRemoveLiquidity(
+        uint256 amount1,
+        uint256 amount2,
+        uint256 burnAmount
+    ) public {
+        amount1 = bound(amount1, 1 ether, 100 ether);
+        amount2 = bound(amount2, 1 ether, 100 ether);
+
+        vm.startPrank(alice);
+
+        uint256 token1BalanceBefore = token1.balanceOf(alice);
+        uint256 token2BalanceBefore = token2.balanceOf(alice);
+
+        token1.approve(address(liquidityPool), amount1);
+        token2.approve(address(liquidityPool), amount2);
+        liquidityPool.addLiquidity(amount1, amount2, 0);
+
+        uint256 aliceLpBalanceBefore = liquidityPool.balanceOf(alice);
+        burnAmount = bound(burnAmount, 1000, aliceLpBalanceBefore);
+
+        liquidityPool.removeLiquidity(burnAmount, 0, 0);
+        vm.stopPrank();
+
+        uint256 token1BalanceAfter = token1.balanceOf(alice);
+        uint256 token2BalanceAfter = token2.balanceOf(alice);
+        uint256 receivedAmountToken1 = (amount1 * burnAmount) /
+            aliceLpBalanceBefore;
+        uint256 receivedAmountToken2 = (amount2 * burnAmount) /
+            aliceLpBalanceBefore;
+
+        assertEq(
+            token1BalanceAfter,
+            token1BalanceBefore - amount1 + receivedAmountToken1
+        );
+        assertEq(
+            token2BalanceAfter,
+            token2BalanceBefore - amount2 + receivedAmountToken2
+        );
+        assertEq(
+            liquidityPool.balanceOf(alice),
+            aliceLpBalanceBefore - burnAmount
+        );
+        assertEq(
+            liquidityPool.totalSupply(),
+            aliceLpBalanceBefore - burnAmount
+        );
+        assertEq(
+            token1.balanceOf(address(liquidityPool)),
+            amount1 - receivedAmountToken1
+        );
+        assertEq(
+            token2.balanceOf(address(liquidityPool)),
+            amount2 - receivedAmountToken2
+        );
+    }
 }

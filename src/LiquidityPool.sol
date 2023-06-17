@@ -12,6 +12,19 @@ contract LiquidityPool is ERC20 {
     IERC20 public token1;
     IERC20 public token2;
 
+    event AddLiquidity(
+        address sender,
+        uint256 amount1,
+        uint256 amount2,
+        uint256 mintAmount
+    );
+    event RemoveLiquidity(
+        address sender,
+        uint256 amount1,
+        uint256 amount2,
+        uint256 burnAmount
+    );
+
     constructor(
         IERC20 _token1,
         IERC20 _token2,
@@ -58,5 +71,29 @@ contract LiquidityPool is ERC20 {
         token2.safeTransferFrom(msg.sender, address(this), amount2);
 
         _mint(msg.sender, mintAmount);
+
+        emit AddLiquidity(msg.sender, amount1, amount2, mintAmount);
+    }
+
+    function removeLiquidity(
+        uint256 burnAmount,
+        uint256 minAmount1,
+        uint256 minAmount2
+    ) external {
+        uint256 token1Balance = token1.balanceOf(address(this));
+        uint256 token2Balance = token2.balanceOf(address(this));
+
+        uint256 amount1 = (burnAmount * token1Balance) / totalSupply();
+        uint256 amount2 = (burnAmount * token2Balance) / totalSupply();
+
+        require(amount1 >= minAmount1, "Insufficient amount1");
+        require(amount2 >= minAmount2, "Insufficient amount2");
+
+        _burn(msg.sender, burnAmount);
+
+        token1.safeTransfer(msg.sender, amount1);
+        token2.safeTransfer(msg.sender, amount2);
+
+        emit RemoveLiquidity(msg.sender, amount1, amount2, burnAmount);
     }
 }
