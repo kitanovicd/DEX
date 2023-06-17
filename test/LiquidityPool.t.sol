@@ -209,4 +209,60 @@ contract LiquidityPoolTest is Test {
             amount2 - receivedAmountToken2
         );
     }
+
+    function testRemoveLiquidityInsufficientAmount1(
+        uint256 amount1,
+        uint256 amount2,
+        uint256 burnAmount
+    ) public {
+        amount1 = bound(amount1, 1 ether, 100 ether);
+        amount2 = bound(amount2, 1 ether, 100 ether);
+        burnAmount = bound(burnAmount, 1 ether, Math.sqrt(amount1 * amount2));
+
+        vm.startPrank(alice);
+
+        token1.approve(address(liquidityPool), amount1);
+        token2.approve(address(liquidityPool), amount2);
+        liquidityPool.addLiquidity(amount1, amount2, 0);
+
+        uint256 expectedToReceiveToken1 = (amount1 * burnAmount) /
+            liquidityPool.balanceOf(alice);
+
+        vm.expectRevert(bytes("Insufficient amount1"));
+        liquidityPool.removeLiquidity(
+            burnAmount,
+            expectedToReceiveToken1 + 1,
+            0
+        );
+
+        vm.stopPrank();
+    }
+
+    function testRemoveLiquidityInsufficientAmount2(
+        uint256 amount1,
+        uint256 amount2,
+        uint256 burnAmount
+    ) public {
+        amount1 = bound(amount1, 1 ether, 100 ether);
+        amount2 = bound(amount2, 1 ether, 100 ether);
+        burnAmount = bound(burnAmount, 1 ether, Math.sqrt(amount1 * amount2));
+
+        vm.startPrank(alice);
+
+        token1.approve(address(liquidityPool), amount1);
+        token2.approve(address(liquidityPool), amount2);
+        liquidityPool.addLiquidity(amount1, amount2, 0);
+
+        uint256 expectedToReceiveToken2 = (amount2 * burnAmount) /
+            liquidityPool.balanceOf(alice);
+
+        vm.expectRevert(bytes("Insufficient amount2"));
+        liquidityPool.removeLiquidity(
+            burnAmount,
+            0,
+            expectedToReceiveToken2 + 1
+        );
+
+        vm.stopPrank();
+    }
 }

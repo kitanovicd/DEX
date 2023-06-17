@@ -9,6 +9,8 @@ import {Math} from "openzeppelin-contracts/contracts/utils/math/Math.sol";
 contract LiquidityPool is ERC20 {
     using SafeERC20 for IERC20;
 
+    uint256 public feePercentage;
+
     IERC20 public token1;
     IERC20 public token2;
 
