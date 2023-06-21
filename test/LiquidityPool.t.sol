@@ -362,8 +362,7 @@ contract LiquidityPoolTest is Test {
 
     function testSwapExactInputRevertExceedsMaxSwapPercentage(
         uint256 amount1,
-        uint256 amount2,
-        uint256 amountToSwap
+        uint256 amount2
     ) public {
         amount1 = bound(amount1, 10 ether, 100 ether);
         amount2 = bound(amount2, 1 ether, 100 ether);

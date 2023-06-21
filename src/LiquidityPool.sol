@@ -47,11 +47,7 @@ contract LiquidityPool is ERC20 {
         uint256 amountIn1,
         uint256 amountIn2,
         uint256 minAmountToReceive
-    ) external {
-        uint256 amount1;
-        uint256 amount2;
-        uint256 mintAmount;
-
+    ) external returns (uint256 amount1, uint256 amount2, uint256 mintAmount) {
         if (totalSupply() == 0) {
             amount1 = amountIn1;
             amount2 = amountIn2;
@@ -85,12 +81,12 @@ contract LiquidityPool is ERC20 {
         uint256 burnAmount,
         uint256 minAmount1,
         uint256 minAmount2
-    ) external {
+    ) external returns (uint256 amount1, uint256 amount2) {
         uint256 token1Balance = token1.balanceOf(address(this));
         uint256 token2Balance = token2.balanceOf(address(this));
 
-        uint256 amount1 = (burnAmount * token1Balance) / totalSupply();
-        uint256 amount2 = (burnAmount * token2Balance) / totalSupply();
+        amount1 = (burnAmount * token1Balance) / totalSupply();
+        amount2 = (burnAmount * token2Balance) / totalSupply();
 
         require(amount1 >= minAmount1, "Insufficient amount1");
         require(amount2 >= minAmount2, "Insufficient amount2");
@@ -108,7 +104,7 @@ contract LiquidityPool is ERC20 {
         IERC20 toToken,
         uint256 amountIn,
         uint256 minAmountOut
-    ) external {
+    ) external returns (uint256 amountOut) {
         uint256 token1PoolBalance = token1.balanceOf(address(this));
         uint256 token2PoolBalance = token2.balanceOf(address(this));
 
@@ -121,7 +117,6 @@ contract LiquidityPool is ERC20 {
         );
 
         uint256 amountInAfterFee = (amountIn * (100 - feePercentage)) / 100;
-        uint256 amountOut;
 
         if (fromToken == token1) {
             amountOut =
@@ -144,7 +139,7 @@ contract LiquidityPool is ERC20 {
         IERC20 toToken,
         uint256 maxAmountIn,
         uint256 amountOut
-    ) external {
+    ) external returns (uint256 amountIn) {
         uint256 token1PoolBalance = token1.balanceOf(address(this));
         uint256 token2PoolBalance = token2.balanceOf(address(this));
 
@@ -155,8 +150,6 @@ contract LiquidityPool is ERC20 {
                     100,
             "Exceeds max swap percentage"
         );
-
-        uint256 amountIn;
 
         if (fromToken == token1) {
             amountIn =
