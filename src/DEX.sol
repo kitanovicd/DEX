@@ -70,6 +70,9 @@ contract DEX {
         liquidityPools[token1][token2] = liquidityPool;
         liquidityPools[token2][token1] = liquidityPool;
 
+        IERC20(token1).approve(liquidityPool, type(uint256).max);
+        IERC20(token2).approve(liquidityPool, type(uint256).max);
+
         emit CreateLiquidityPool(token1, token2, liquidityPool);
     }
 
