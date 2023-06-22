@@ -9,4 +9,4 @@ else
 fi
 
 
-forge script scripts/Deploy.s.sol:Deploy --rpc-url ${TESTNET_RPC_URL} --private-key ${TESTNET_PRIVATE_KEY} --broadcast
+forge script scripts/Deploy.s.sol:Deploy --rpc-url ${RPC_URL} --private-key ${PRIVATE_KEY} --broadcast
