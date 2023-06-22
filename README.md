@@ -11,9 +11,6 @@ The DEX consists of two main smart contracts:
 To use the DEX, follow these steps:
 <br>
 1. Deploy the DEX contract (DEX.sol) on the Ethereum network. Deployment should be done by running deployment script (set env variables before)
-```bash
-./script/deploy.sh
-```
 
 2. Call the ***createLiquidityPool*** function to create a new liquidity pool. Provide the addresses of the two tokens that will be traded in the pool, along with other parameters such as fee percentage and maximum swap percentage. This function will deploy a new ***LiquidityPool*** contract for the specified token pair.
 
